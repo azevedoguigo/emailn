@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/azevedoguigo/emailn/internal/contract"
+	internalerros "github.com/azevedoguigo/emailn/internal/internal-erros"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -20,8 +21,8 @@ func (r *repositoryMock) Save(campaign *Campaign) error {
 
 var (
 	newCampaign = contract.NewCampaing{
-		Name:    "Test",
-		Content: "Body",
+		Name:    "Test Campaign",
+		Content: "Body content",
 		Emails:  []string{"mail.test@example.com"},
 	}
 	service = Service{}
@@ -29,6 +30,10 @@ var (
 
 func Test_Create_Campaign(t *testing.T) {
 	assert := assert.New(t)
+
+	repositoryMock := new(repositoryMock)
+	repositoryMock.On("Save", mock.Anything).Return(nil)
+	service.Repository = repositoryMock
 
 	id, err := service.Create(newCampaign)
 
@@ -39,11 +44,10 @@ func Test_Create_Campaign(t *testing.T) {
 func Test_Create_ValidateDomainError(t *testing.T) {
 	assert := assert.New(t)
 
-	newCampaign.Name = ""
-	_, err := service.Create(newCampaign)
+	_, err := service.Create(contract.NewCampaing{})
 
 	assert.NotNil(err)
-	assert.Equal("name is required", err.Error())
+	assert.False(errors.Is(internalerros.ErrInternal, err))
 }
 
 func Test_Create_SaveCampaign(t *testing.T) {
@@ -73,5 +77,5 @@ func Test_Create_ValidateRepositorySave(t *testing.T) {
 
 	_, err := service.Create(newCampaign)
 
-	assert.Equal("error to save on database", err.Error())
+	assert.True(errors.Is(internalerros.ErrInternal, err))
 }

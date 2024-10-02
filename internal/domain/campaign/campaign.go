@@ -1,47 +1,42 @@
 package campaign
 
 import (
-	"errors"
 	"time"
 
+	internalerros "github.com/azevedoguigo/emailn/internal/internal-erros"
 	"github.com/google/uuid"
 )
 
 type Contact struct {
-	Email string
+	Email string `validate:"email"`
 }
 
 type Campaign struct {
-	ID        string
-	Name      string
-	Content   string
-	Contacts  []Contact
-	CreatedAt time.Time
+	ID        string    `validate:"required"`
+	Name      string    `validate:"min=5,max=24"`
+	Content   string    `validate:"min=5,max=1024"`
+	Contacts  []Contact `validate:"min=1,dive"`
+	CreatedAt time.Time `validate:"required"`
 }
 
 func NewCampaing(name string, content string, emails []string) (*Campaign, error) {
-	if name == "" {
-		return nil, errors.New("name is required")
-	}
-
-	if content == "" {
-		return nil, errors.New("content is required")
-	}
-
-	if len(emails) == 0 {
-		return nil, errors.New("contact is required")
-	}
-
 	contacts := make([]Contact, len(emails))
 	for index, value := range emails {
 		contacts[index].Email = value
 	}
 
-	return &Campaign{
+	campaign := &Campaign{
 		ID:        uuid.NewString(),
 		Name:      name,
 		Content:   content,
 		Contacts:  contacts,
 		CreatedAt: time.Now(),
-	}, nil
+	}
+	err := internalerros.ValidateStruct(campaign)
+
+	if err == nil {
+		return campaign, nil
+	}
+
+	return nil, err
 }
