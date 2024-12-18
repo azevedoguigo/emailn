@@ -20,6 +20,9 @@ func HandlerError(endpointFunc EndpointFunc) http.HandlerFunc {
 			} else {
 				render.Status(r, http.StatusBadRequest)
 			}
+
+			render.JSON(w, r, map[string]string{"error": err.Error()})
+			return
 		}
 
 		render.Status(r, status)
