@@ -7,6 +7,7 @@ import (
 
 type Service interface {
 	Create(newCampaign contract.NewCampaing) (string, error)
+	GetByID(id string) (*contract.GetCampaign, error)
 }
 
 type ServiceImp struct {
