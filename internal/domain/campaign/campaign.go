@@ -8,7 +8,9 @@ import (
 )
 
 type Contact struct {
-	Email string `validate:"email"`
+	ID         string `validate:"required"`
+	Email      string `validate:"email"`
+	CampaignID string `validate:"required"`
 }
 
 const (
@@ -27,6 +29,7 @@ type Campaign struct {
 func NewCampaing(name string, content string, emails []string) (*Campaign, error) {
 	contacts := make([]Contact, len(emails))
 	for index, value := range emails {
+		contacts[index].ID = uuid.NewString()
 		contacts[index].Email = value
 	}
 
