@@ -8,9 +8,9 @@ import (
 )
 
 type Contact struct {
-	ID         string `validate:"required"`
-	Email      string `validate:"email"`
-	CampaignID string `validate:"required"`
+	ID         string `gorm:"size:50" validate:"required"`
+	Email      string `gorm:"size:50" validate:"email"`
+	CampaignID string `gorm:"size:50" validate:"required"`
 }
 
 const (
@@ -18,10 +18,10 @@ const (
 )
 
 type Campaign struct {
-	ID        string    `validate:"required"`
-	Name      string    `validate:"min=5,max=24"`
-	Content   string    `validate:"min=5,max=1024"`
-	Status    string    `validate:"required"`
+	ID        string    `gorm:"size:50" validate:"required"`
+	Name      string    `gorm:"size:50" validate:"min=5,max=24"`
+	Content   string    `gorm:"size:1024" validate:"min=5,max=1024"`
+	Status    string    `gorm:"size:12" validate:"required"`
 	Contacts  []Contact `validate:"min=1,dive"`
 	CreatedAt time.Time `validate:"required"`
 }
