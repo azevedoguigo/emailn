@@ -25,3 +25,8 @@ func (c *CampaignRepository) GetByID(id string) (*campaign.Campaign, error) {
 	tx := c.DB.Preload("Contacts").First(&campaign, "id = ?", id)
 	return &campaign, tx.Error
 }
+
+func (c *CampaignRepository) Delete(campaign *campaign.Campaign) error {
+	tx := c.DB.Select("Contacts").Delete(campaign)
+	return tx.Error
+}

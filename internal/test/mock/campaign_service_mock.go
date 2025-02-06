@@ -32,3 +32,12 @@ func (m *CampaignServiceMock) Cancel(id string) error {
 
 	return nil
 }
+
+func (m *CampaignServiceMock) Delete(id string) error {
+	args := m.Called(id)
+	if args.Get(0) != nil {
+		return args.Error(0)
+	}
+
+	return nil
+}

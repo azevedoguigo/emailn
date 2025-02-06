@@ -18,6 +18,7 @@ const (
 	StatusPending  string = "pending"
 	StatusDone     string = "done"
 	StatusCanceled string = "canceled"
+	StatusDeleted  string = "deleted"
 )
 
 type Campaign struct {
@@ -31,6 +32,10 @@ type Campaign struct {
 
 func (c *Campaign) Cancel() {
 	c.Status = StatusCanceled
+}
+
+func (c *Campaign) Delete() {
+	c.Status = StatusDeleted
 }
 
 func NewCampaing(name string, content string, emails []string) (*Campaign, error) {

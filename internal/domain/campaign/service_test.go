@@ -33,6 +33,15 @@ func (r *repositoryMock) GetByID(id string) (*Campaign, error) {
 	return args.Get(0).(*Campaign), nil
 }
 
+func (m *repositoryMock) Delete(campaign *Campaign) error {
+	args := m.Called(campaign)
+	if args.Get(0) != nil {
+		return args.Error(0)
+	}
+
+	return nil
+}
+
 var (
 	newCampaign = contract.NewCampaing{
 		Name:    "Test Campaign",
