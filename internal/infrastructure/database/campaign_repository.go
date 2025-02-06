@@ -21,7 +21,7 @@ func (c *CampaignRepository) Get() ([]campaign.Campaign, error) {
 }
 
 func (c *CampaignRepository) GetByID(id string) (*campaign.Campaign, error) {
-	var campaign = &campaign.Campaign{}
-	tx := c.DB.Find(&campaign, id)
-	return campaign, tx.Error
+	campaign := campaign.Campaign{ID: id}
+	tx := c.DB.Preload("Contacts").First(&campaign, "id = ?", id)
+	return &campaign, tx.Error
 }

@@ -8,10 +8,7 @@ import (
 
 func (h *Handler) CampaignGetByID(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	id := chi.URLParam(r, "id")
-	campaigns, err := h.CampaignService.GetByID(id)
-	if err != nil {
-		return nil, http.StatusInternalServerError, err
-	}
+	campaign, err := h.CampaignService.GetByID(id)
 
-	return campaigns, http.StatusOK, err
+	return campaign, http.StatusOK, err
 }
