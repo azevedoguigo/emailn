@@ -14,7 +14,10 @@ type Contact struct {
 }
 
 const (
-	StatusPending string = "pending"
+	StatusStarted  string = "started"
+	StatusPending  string = "pending"
+	StatusDone     string = "done"
+	StatusCanceled string = "canceled"
 )
 
 type Campaign struct {
@@ -24,6 +27,10 @@ type Campaign struct {
 	Status    string    `gorm:"size:12" validate:"required"`
 	Contacts  []Contact `validate:"min=1,dive"`
 	CreatedAt time.Time `validate:"required"`
+}
+
+func (c *Campaign) Cancel() {
+	c.Status = StatusCanceled
 }
 
 func NewCampaing(name string, content string, emails []string) (*Campaign, error) {

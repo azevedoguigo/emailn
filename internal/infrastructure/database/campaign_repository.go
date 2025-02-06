@@ -10,7 +10,7 @@ type CampaignRepository struct {
 }
 
 func (c *CampaignRepository) Save(campaign *campaign.Campaign) error {
-	tx := c.DB.Create(campaign)
+	tx := c.DB.Save(campaign)
 	return tx.Error
 }
 
@@ -21,7 +21,7 @@ func (c *CampaignRepository) Get() ([]campaign.Campaign, error) {
 }
 
 func (c *CampaignRepository) GetByID(id string) (*campaign.Campaign, error) {
-	campaign := campaign.Campaign{ID: id}
+	var campaign campaign.Campaign
 	tx := c.DB.Preload("Contacts").First(&campaign, "id = ?", id)
 	return &campaign, tx.Error
 }
