@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/azevedoguigo/emailn/internal/contract"
-	internalmock "github.com/azevedoguigo/emailn/internal/test/mock"
+	internalmock "github.com/azevedoguigo/emailn/internal/test/internalmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
