@@ -30,10 +30,6 @@ type Campaign struct {
 	CreatedAt time.Time `validate:"required"`
 }
 
-func (c *Campaign) Cancel() {
-	c.Status = StatusCanceled
-}
-
 func (c *Campaign) Delete() {
 	c.Status = StatusDeleted
 }
