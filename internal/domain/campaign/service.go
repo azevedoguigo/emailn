@@ -10,7 +10,6 @@ import (
 type Service interface {
 	Create(newCampaign contract.NewCampaing) (string, error)
 	GetByID(id string) (*contract.GetCampaign, error)
-	Cancel(id string) error
 	Delete(string) error
 }
 
@@ -34,33 +33,16 @@ func (s *ServiceImp) Create(newCampaign contract.NewCampaing) (string, error) {
 func (s *ServiceImp) GetByID(id string) (*contract.GetCampaign, error) {
 	campaign, err := s.Repository.GetByID(id)
 	if err != nil {
-		internalerros.ProcessErrorToReturn(err)
+		return nil, internalerros.ProcessErrorToReturn(err)
 	}
 
 	return &contract.GetCampaign{
-		ID:      campaign.ID,
-		Name:    campaign.Name,
-		Content: campaign.Content,
-		Status:  campaign.Status,
+		ID:                   campaign.ID,
+		Name:                 campaign.Name,
+		Content:              campaign.Content,
+		Status:               campaign.Status,
+		AmountOfEmailsToSend: len(campaign.Contacts),
 	}, nil
-}
-
-func (s *ServiceImp) Cancel(id string) error {
-	campaign, err := s.Repository.GetByID(id)
-	if err != nil {
-		return internalerros.ErrInternal
-	}
-
-	if campaign.Status != StatusPending {
-		return errors.New("campaign status invalid")
-	}
-
-	campaign.Cancel()
-	if err := s.Repository.Save(campaign); err != nil {
-		return internalerros.ErrInternal
-	}
-
-	return nil
 }
 
 func (s *ServiceImp) Delete(id string) error {
