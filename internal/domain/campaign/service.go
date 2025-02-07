@@ -34,7 +34,7 @@ func (s *ServiceImp) Create(newCampaign contract.NewCampaing) (string, error) {
 func (s *ServiceImp) GetByID(id string) (*contract.GetCampaign, error) {
 	campaign, err := s.Repository.GetByID(id)
 	if err != nil {
-		return nil, internalerros.ErrInternal
+		internalerros.ProcessErrorToReturn(err)
 	}
 
 	return &contract.GetCampaign{
