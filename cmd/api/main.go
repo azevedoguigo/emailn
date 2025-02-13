@@ -17,7 +17,6 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(endpoint.Auth)
 
 	db := database.NewDB()
 
@@ -28,9 +27,13 @@ func main() {
 		CampaignService: &campaignService,
 	}
 
-	r.Post("/campaign", endpoint.HandlerError(handler.CampaignPost))
-	r.Get("/campaign/{id}", endpoint.HandlerError(handler.CampaignGetByID))
-	r.Delete("/campaign/{id}", endpoint.HandlerError(handler.CampaignDelete))
+	r.Route("/campaign", func(r chi.Router) {
+		r.Use(endpoint.Auth)
+
+		r.Post("/", endpoint.HandlerError(handler.CampaignPost))
+		r.Get("/{id}", endpoint.HandlerError(handler.CampaignGetByID))
+		r.Delete("/{id}", endpoint.HandlerError(handler.CampaignDelete))
+	})
 
 	http.ListenAndServe(":3000", r)
 }
