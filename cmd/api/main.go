@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/azevedoguigo/emailn/internal/domain/campaign"
@@ -35,5 +36,9 @@ func main() {
 		r.Delete("/{id}", endpoint.HandlerError(handler.CampaignDelete))
 	})
 
-	http.ListenAndServe(":3000", r)
+	log.Default().Println("Starting server on :3000")
+	err := http.ListenAndServe(":3000", r)
+	if err != nil {
+		log.Fatal("Error starting server", err)
+	}
 }
