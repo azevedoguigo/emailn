@@ -8,7 +8,7 @@ import (
 )
 
 type Service interface {
-	Create(newCampaign contract.NewCampaing) (string, error)
+	Create(newCampaign contract.NewCampaign) (string, error)
 	GetByID(id string) (*contract.GetCampaign, error)
 	Delete(string) error
 }
@@ -17,7 +17,7 @@ type ServiceImp struct {
 	Repository Repository
 }
 
-func (s *ServiceImp) Create(newCampaign contract.NewCampaing) (string, error) {
+func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
 	campaign, err := NewCampaing(newCampaign.Name, newCampaign.Content, newCampaign.Emails)
 	if err != nil {
 		return "", err

@@ -1,6 +1,6 @@
 package contract
 
-type NewCampaing struct {
+type NewCampaign struct {
 	Name    string
 	Content string
 	Status  string

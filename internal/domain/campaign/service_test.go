@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	newCampaign = contract.NewCampaing{
+	newCampaign = contract.NewCampaign{
 		Name:    "Test Campaign",
 		Content: "Body content",
 		Status:  campaign.StatusPending,
@@ -39,7 +39,7 @@ func Test_Create_Campaign(t *testing.T) {
 func Test_Create_ValidateDomainError(t *testing.T) {
 	assert := assert.New(t)
 
-	_, err := service.Create(contract.NewCampaing{})
+	_, err := service.Create(contract.NewCampaign{})
 
 	assert.NotNil(err)
 	assert.False(errors.Is(internalerros.ErrInternal, err))
