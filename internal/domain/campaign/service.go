@@ -53,7 +53,7 @@ func (s *ServiceImp) Delete(id string) error {
 	}
 
 	if campaign.Status != StatusPending {
-		return errors.New("Campaign status invalid")
+		return errors.New("campaign status invalid")
 	}
 
 	campaign.Delete()
