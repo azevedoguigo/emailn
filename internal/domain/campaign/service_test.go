@@ -78,7 +78,12 @@ func Test_Create_ValidateRepositorySave(t *testing.T) {
 func Test_GetByID_Return_Campaign(t *testing.T) {
 	assert := assert.New(t)
 
-	campaign, _ := campaign.NewCampaing(newCampaign.Name, newCampaign.Content, newCampaign.Emails)
+	campaign, _ := campaign.NewCampaing(
+		newCampaign.Name,
+		newCampaign.Content,
+		newCampaign.CreatedBy,
+		newCampaign.Emails,
+	)
 
 	repositoryMock := new(internalmock.CampaignRepositoryMock)
 	repositoryMock.On("GetByID", mock.MatchedBy(func(id string) bool {
@@ -96,7 +101,12 @@ func Test_GetByID_Return_Campaign(t *testing.T) {
 
 func Test_GetById_ReturnErrorWhenSomethingWrongExist(t *testing.T) {
 	assert := assert.New(t)
-	campaign, _ := campaign.NewCampaing(newCampaign.Name, newCampaign.Content, newCampaign.Emails)
+	campaign, _ := campaign.NewCampaing(
+		newCampaign.Name,
+		newCampaign.Content,
+		newCampaign.CreatedBy,
+		newCampaign.Emails,
+	)
 	repositoryMock := new(internalmock.CampaignRepositoryMock)
 	repositoryMock.On("GetByID", mock.Anything).Return(nil, errors.New("Something wrong"))
 	service.Repository = repositoryMock
@@ -111,6 +121,7 @@ func Test_Delete_ReturnNilWhenDeleteHasSuccess(t *testing.T) {
 	campaignData, _ := campaign.NewCampaing(
 		"Campaign Name",
 		"Campaign content",
+		newCampaign.CreatedBy,
 		[]string{"test@example.com"},
 	)
 
@@ -156,7 +167,7 @@ func Test_Delete_ReturnStatusInvalidWhenCampaignHasStatusNotEqualsPending(t *tes
 	err := service.Delete(campaign.ID)
 
 	assert.NotNil(err)
-	assert.Equal(err.Error(), "Campaign status invalid")
+	assert.Equal(err.Error(), "campaign status invalid")
 }
 
 func Test_Delete_ReturnInternalErrorWhenDeleteWasProblem(t *testing.T) {
@@ -165,6 +176,7 @@ func Test_Delete_ReturnInternalErrorWhenDeleteWasProblem(t *testing.T) {
 	campaignData, _ := campaign.NewCampaing(
 		"Campaign Name",
 		"Campaign content",
+		newCampaign.CreatedBy,
 		[]string{"test@example.com"},
 	)
 
