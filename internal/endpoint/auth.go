@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/golang-jwt/jwt"
 	"net/http"
+	"os"
 	"strings"
 
 	oidc "github.com/coreos/go-oidc/v3/oidc"
@@ -21,7 +22,7 @@ func Auth(next http.Handler) http.Handler {
 
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
 
-		provider, err := oidc.NewProvider(r.Context(), "http://localhost:8080/realms/provider")
+		provider, err := oidc.NewProvider(r.Context(), os.Getenv("KEYCLOAK_URL"))
 		if err != nil {
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, map[string]string{"error": "error to connect to the provider"})
