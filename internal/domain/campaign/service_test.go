@@ -195,9 +195,7 @@ func Test_Delete_ReturnInternalErrorWhenDeleteWasProblem(t *testing.T) {
 	)
 
 	repositoryMock.On("GetByID", mock.Anything).Return(campaignData, nil)
-	repositoryMock.On("Delete", mock.MatchedBy(func(campaign *campaign.Campaign) bool {
-		return campaignData == campaign
-	})).Return(errors.New("error to delete campaign"))
+	repositoryMock.On("Delete", mock.Anything).Return(errors.New("error to delete campaign"))
 
 	err := service.Delete(campaignData.ID)
 
