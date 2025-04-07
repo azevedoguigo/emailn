@@ -10,11 +10,13 @@ import (
 type Service interface {
 	Create(newCampaign contract.NewCampaign) (string, error)
 	GetByID(id string) (*contract.GetCampaign, error)
-	Delete(string) error
+	Delete(id string) error
+	Start(id string) error
 }
 
 type ServiceImp struct {
 	Repository Repository
+	SendMail   func(campaign *Campaign) error
 }
 
 func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
@@ -60,6 +62,30 @@ func (s *ServiceImp) Delete(id string) error {
 	err = s.Repository.Delete(campaign)
 	if err != nil {
 		return internalerros.ErrInternal
+	}
+
+	return nil
+}
+
+func (s *ServiceImp) Start(id string) error {
+	campaign, err := s.Repository.GetByID(id)
+	if err != nil {
+		return internalerros.ProcessErrorToReturn(err)
+	}
+
+	if campaign.Status != StatusPending {
+		return errors.New("campaign status invalid")
+	}
+
+	err = s.SendMail(campaign)
+	if err != nil {
+		return internalerros.ProcessErrorToReturn(err)
+	}
+
+	campaign.Status = StatusDone
+	err = s.Repository.Update(campaign)
+	if err != nil {
+		return internalerros.ProcessErrorToReturn(err)
 	}
 
 	return nil
