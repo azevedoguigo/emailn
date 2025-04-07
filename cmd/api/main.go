@@ -1,13 +1,15 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 
 	"github.com/azevedoguigo/emailn/internal/domain/campaign"
 	"github.com/azevedoguigo/emailn/internal/endpoint"
 	"github.com/azevedoguigo/emailn/internal/infrastructure/database"
+	"github.com/azevedoguigo/emailn/internal/infrastructure/mail"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -29,6 +31,7 @@ func main() {
 
 	campaignService := campaign.ServiceImp{
 		Repository: &database.CampaignRepository{DB: db},
+		SendMail:   mail.SendMail,
 	}
 	handler := endpoint.Handler{
 		CampaignService: &campaignService,
@@ -39,6 +42,7 @@ func main() {
 
 		r.Post("/", endpoint.HandlerError(handler.CampaignPost))
 		r.Get("/{id}", endpoint.HandlerError(handler.CampaignGetByID))
+		r.Patch("/{id}", endpoint.HandlerError(handler.CampaignStart))
 		r.Delete("/{id}", endpoint.HandlerError(handler.CampaignDelete))
 	})
 
