@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,18 +15,35 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func setup(body contract.NewCampaign, expectedCreatedBy string) (*http.Request, *httptest.ResponseRecorder) {
+	var buf bytes.Buffer
+	json.NewEncoder(&buf).Encode(body)
+
+	req, _ := http.NewRequest("POST", "/", &buf)
+	ctx := context.WithValue(req.Context(), "email", expectedCreatedBy)
+	req = req.WithContext(ctx)
+	rr := httptest.NewRecorder()
+
+	return req, rr
+}
+
 func Test_CampaignPost_Should_Save_New_Campaign(t *testing.T) {
 	assert := assert.New(t)
 
-	body := contract.NewCampaing{
+	expectedCreatedBy := "creator@example.com"
+
+	body := contract.NewCampaign{
 		Name:    "Test",
 		Content: "Hi everyone",
 		Emails:  []string{"test@example.com"},
 	}
 
 	service := new(internalmock.CampaignServiceMock)
-	service.On("Create", mock.MatchedBy(func(request contract.NewCampaing) bool {
-		if request.Name == body.Name && request.Content == body.Content && request.Emails[0] == body.Emails[0] {
+	service.On("Create", mock.MatchedBy(func(request contract.NewCampaign) bool {
+		if request.Name == body.Name &&
+			request.Content == body.Content &&
+			request.CreatedBy == expectedCreatedBy &&
+			request.Emails[0] == body.Emails[0] {
 			return true
 		} else {
 			return false
@@ -36,11 +54,7 @@ func Test_CampaignPost_Should_Save_New_Campaign(t *testing.T) {
 		CampaignService: service,
 	}
 
-	var buf bytes.Buffer
-	json.NewEncoder(&buf).Encode(body)
-
-	req, _ := http.NewRequest("POST", "/", &buf)
-	rr := httptest.NewRecorder()
+	req, rr := setup(body, expectedCreatedBy)
 
 	_, status, err := handler.CampaignPost(rr, req)
 
@@ -51,7 +65,7 @@ func Test_CampaignPost_Should_Save_New_Campaign(t *testing.T) {
 func Test_CampaignPost_Should_Inform_Error_When_Exist(t *testing.T) {
 	assert := assert.New(t)
 
-	body := contract.NewCampaing{
+	body := contract.NewCampaign{
 		Name:    "Test",
 		Content: "Hi everyone",
 		Emails:  []string{"test@example.com"},
@@ -64,11 +78,7 @@ func Test_CampaignPost_Should_Inform_Error_When_Exist(t *testing.T) {
 		CampaignService: service,
 	}
 
-	var buf bytes.Buffer
-	json.NewEncoder(&buf).Encode(body)
-
-	req, _ := http.NewRequest("POST", "/", &buf)
-	rr := httptest.NewRecorder()
+	req, rr := setup(body, "creator@example.com")
 
 	_, _, err := handler.CampaignPost(rr, req)
 

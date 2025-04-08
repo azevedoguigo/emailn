@@ -26,6 +26,10 @@ func (c *CampaignRepository) GetByID(id string) (*campaign.Campaign, error) {
 	return &campaign, tx.Error
 }
 
+func (c *CampaignRepository) Update(campaign *campaign.Campaign) error {
+	return c.Save(campaign)
+}
+
 func (c *CampaignRepository) Delete(campaign *campaign.Campaign) error {
 	tx := c.DB.Select("Contacts").Delete(campaign)
 	return tx.Error

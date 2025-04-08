@@ -26,6 +26,7 @@ type Campaign struct {
 	Name      string    `gorm:"size:50" validate:"min=5,max=24"`
 	Content   string    `gorm:"size:1024" validate:"min=5,max=1024"`
 	Status    string    `gorm:"size:12" validate:"required"`
+	CreatedBy string    `gorm:"size:50"`
 	Contacts  []Contact `validate:"min=1,dive"`
 	CreatedAt time.Time `validate:"required"`
 }
@@ -34,7 +35,7 @@ func (c *Campaign) Delete() {
 	c.Status = StatusDeleted
 }
 
-func NewCampaing(name string, content string, emails []string) (*Campaign, error) {
+func NewCampaing(name, content, createdBy string, emails []string) (*Campaign, error) {
 	contacts := make([]Contact, len(emails))
 	for index, value := range emails {
 		contacts[index].ID = uuid.NewString()
@@ -46,6 +47,7 @@ func NewCampaing(name string, content string, emails []string) (*Campaign, error
 		Name:      name,
 		Content:   content,
 		Status:    StatusPending,
+		CreatedBy: createdBy,
 		Contacts:  contacts,
 		CreatedAt: time.Now(),
 	}
