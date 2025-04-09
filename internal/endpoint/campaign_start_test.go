@@ -15,7 +15,7 @@ func Test_CampaignStart_Should_Return_Ok(t *testing.T) {
 
 	service.On("Start", mock.Anything).Return(nil)
 
-	req, rr := NewRequestAndRecorder(http.MethodPatch, "/")
+	req, rr := NewRequestAndRecorder(http.MethodPatch, "/", nil)
 
 	campaignID := "1xpTO"
 	req = AddParameter(req, "id", campaignID)
@@ -37,7 +37,7 @@ func Test_CampaignStart_Should_Return_Err(t *testing.T) {
 		return id == campaignID
 	})).Return(expectedError)
 
-	req, rr := NewRequestAndRecorder(http.MethodPatch, "/")
+	req, rr := NewRequestAndRecorder(http.MethodPatch, "/", nil)
 
 	req = AddParameter(req, "id", campaignID)
 

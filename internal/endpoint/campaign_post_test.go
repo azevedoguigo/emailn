@@ -1,44 +1,29 @@
 package endpoint
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/azevedoguigo/emailn/internal/contract"
-	internalmock "github.com/azevedoguigo/emailn/internal/test/internalmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-func setup(body contract.NewCampaign, expectedCreatedBy string) (*http.Request, *httptest.ResponseRecorder) {
-	var buf bytes.Buffer
-	json.NewEncoder(&buf).Encode(body)
-
-	req, _ := http.NewRequest("POST", "/", &buf)
-	ctx := context.WithValue(req.Context(), "email", expectedCreatedBy)
-	req = req.WithContext(ctx)
-	rr := httptest.NewRecorder()
-
-	return req, rr
-}
-
-func Test_CampaignPost_Should_Save_New_Campaign(t *testing.T) {
-	assert := assert.New(t)
-
-	expectedCreatedBy := "creator@example.com"
-
-	body := contract.NewCampaign{
+var (
+	expectedCreatedBy = "creator@example.com"
+	body              = contract.NewCampaign{
 		Name:    "Test",
 		Content: "Hi everyone",
 		Emails:  []string{"test@example.com"},
 	}
+)
 
-	service := new(internalmock.CampaignServiceMock)
+func Test_CampaignPost_Should_Save_New_Campaign(t *testing.T) {
+	assert := assert.New(t)
+
+	Setup()
+
 	service.On("Create", mock.MatchedBy(func(request contract.NewCampaign) bool {
 		if request.Name == body.Name &&
 			request.Content == body.Content &&
@@ -50,11 +35,8 @@ func Test_CampaignPost_Should_Save_New_Campaign(t *testing.T) {
 		}
 	})).Return("1xpTO", nil)
 
-	handler := Handler{
-		CampaignService: service,
-	}
-
-	req, rr := setup(body, expectedCreatedBy)
+	req, rr := NewRequestAndRecorder(http.MethodPost, "/", body)
+	req = AddContext(req, "email", expectedCreatedBy)
 
 	_, status, err := handler.CampaignPost(rr, req)
 
@@ -65,20 +47,12 @@ func Test_CampaignPost_Should_Save_New_Campaign(t *testing.T) {
 func Test_CampaignPost_Should_Inform_Error_When_Exist(t *testing.T) {
 	assert := assert.New(t)
 
-	body := contract.NewCampaign{
-		Name:    "Test",
-		Content: "Hi everyone",
-		Emails:  []string{"test@example.com"},
-	}
+	Setup()
 
-	service := new(internalmock.CampaignServiceMock)
 	service.On("Create", mock.Anything).Return("", fmt.Errorf("error"))
 
-	handler := Handler{
-		CampaignService: service,
-	}
-
-	req, rr := setup(body, "creator@example.com")
+	req, rr := NewRequestAndRecorder(http.MethodPost, "/", body)
+	req = AddContext(req, "email", expectedCreatedBy)
 
 	_, _, err := handler.CampaignPost(rr, req)
 
