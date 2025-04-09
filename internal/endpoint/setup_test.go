@@ -41,3 +41,8 @@ func AddParameter(req *http.Request, key, value string) *http.Request {
 
 	return req
 }
+
+func AddContext(req *http.Request, key, value string) *http.Request {
+	ctx := context.WithValue(req.Context(), key, value)
+	return req.WithContext(ctx)
+}
