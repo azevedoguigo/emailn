@@ -18,6 +18,7 @@ const (
 	StatusPending  string = "pending"
 	StatusDone     string = "done"
 	StatusCanceled string = "canceled"
+	StatusFailed   string = "failed"
 	StatusDeleted  string = "deleted"
 )
 
@@ -29,6 +30,18 @@ type Campaign struct {
 	CreatedBy string    `gorm:"size:50"`
 	Contacts  []Contact `validate:"min=1,dive"`
 	CreatedAt time.Time `validate:"required"`
+}
+
+func (c *Campaign) Started() {
+	c.Status = StatusStarted
+}
+
+func (c *Campaign) Done() {
+	c.Status = StatusDone
+}
+
+func (c *Campaign) Failed() {
+	c.Status = StatusFailed
 }
 
 func (c *Campaign) Delete() {
