@@ -1,7 +1,9 @@
 package endpoint
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 
@@ -19,8 +21,13 @@ func Setup() {
 	handler.CampaignService = service
 }
 
-func NewRequestAndRecorder(method, url string) (*http.Request, *httptest.ResponseRecorder) {
-	request, _ := http.NewRequest(method, url, nil)
+func NewRequestAndRecorder(method, url string, body interface{}) (*http.Request, *httptest.ResponseRecorder) {
+	var buffer bytes.Buffer
+	if body != nil {
+		json.NewEncoder(&buffer).Encode(body)
+	}
+
+	request, _ := http.NewRequest(method, url, &buffer)
 	recorder := httptest.NewRecorder()
 
 	return request, recorder
