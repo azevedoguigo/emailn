@@ -27,7 +27,8 @@ func (c *CampaignRepository) GetByID(id string) (*campaign.Campaign, error) {
 }
 
 func (c *CampaignRepository) Update(campaign *campaign.Campaign) error {
-	return c.Save(campaign)
+	tx := c.DB.Save(campaign)
+	return tx.Error
 }
 
 func (c *CampaignRepository) Delete(campaign *campaign.Campaign) error {
