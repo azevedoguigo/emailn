@@ -30,7 +30,7 @@ type Campaign struct {
 	Contacts  []Contact `validate:"min=1,dive"`
 	CreatedBy string    `gorm:"size:50;not null"`
 	CreatedAt time.Time `gorm:"not null" validate:"required"`
-	UpdatedAt time.Time `validate:"required"`
+	UpdatedAt time.Time
 }
 
 func (c *Campaign) Started() {
@@ -39,6 +39,7 @@ func (c *Campaign) Started() {
 
 func (c *Campaign) Done() {
 	c.Status = StatusDone
+	c.UpdatedAt = time.Now()
 }
 
 func (c *Campaign) Failed() {
