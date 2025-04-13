@@ -6,4 +6,5 @@ type Repository interface {
 	GetByID(id string) (*Campaign, error)
 	Update(campaign *Campaign) error
 	Delete(campaign *Campaign) error
+	GetStartedCampaignsButNotExecuted() ([]Campaign, error)
 }
