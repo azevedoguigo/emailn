@@ -67,6 +67,17 @@ func (s *ServiceImp) Delete(id string) error {
 	return nil
 }
 
+func (s *ServiceImp) SendEmail(campaign *Campaign) {
+	err := s.SendMail(campaign)
+	if err != nil {
+		campaign.Failed()
+	} else {
+		campaign.Done()
+	}
+
+	s.Repository.Update(campaign)
+}
+
 func (s *ServiceImp) Start(id string) error {
 	campaign, err := s.Repository.GetByID(id)
 	if err != nil {
@@ -77,16 +88,7 @@ func (s *ServiceImp) Start(id string) error {
 		return errors.New("campaign status invalid")
 	}
 
-	go func() {
-		err = s.SendMail(campaign)
-		if err != nil {
-			campaign.Failed()
-		} else {
-			campaign.Done()
-		}
-
-		s.Repository.Update(campaign)
-	}()
+	go s.SendEmail(campaign)
 
 	campaign.Started()
 	err = s.Repository.Update(campaign)
