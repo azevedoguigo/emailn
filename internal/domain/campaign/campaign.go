@@ -23,13 +23,14 @@ const (
 )
 
 type Campaign struct {
-	ID        string    `gorm:"size:50" validate:"required"`
-	Name      string    `gorm:"size:50" validate:"min=5,max=24"`
-	Content   string    `gorm:"size:1024" validate:"min=5,max=1024"`
-	Status    string    `gorm:"size:12" validate:"required"`
-	CreatedBy string    `gorm:"size:50"`
+	ID        string    `gorm:"size:50;not null" validate:"required"`
+	Name      string    `gorm:"size:50;not null" validate:"min=5,max=24"`
+	Content   string    `gorm:"size:1024;not null" validate:"min=5,max=1024"`
+	Status    string    `gorm:"size:12;not null" validate:"required"`
 	Contacts  []Contact `validate:"min=1,dive"`
-	CreatedAt time.Time `validate:"required"`
+	CreatedBy string    `gorm:"size:50;not null"`
+	CreatedAt time.Time `gorm:"not null" validate:"required"`
+	UpdatedAt time.Time
 }
 
 func (c *Campaign) Started() {
@@ -38,6 +39,7 @@ func (c *Campaign) Started() {
 
 func (c *Campaign) Done() {
 	c.Status = StatusDone
+	c.UpdatedAt = time.Now()
 }
 
 func (c *Campaign) Failed() {
